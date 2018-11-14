@@ -5,10 +5,14 @@ breed [humans human]
 
 hungers-own [eat-time]
 
+globals[eating sleeping]
+
 to setup
   clear-all
   turtles-setup
   patches-setup
+  set eating false
+  set sleeping false
   reset-ticks
 end
 
@@ -22,7 +26,7 @@ to turtles-setup
                     set ycor 5
                     set heading 0
                     set eat-time eat-time-const]
-  create-sleepys 1 [set color magenta
+  create-sleepys 1 [set color green
                   set xcor 10
                   set ycor 5
                   set heading 0]
@@ -54,36 +58,35 @@ to fears-go
 end
 
 to hungers-go
-  ifelse eat
+  ifelse eating
   [ifelse eat-time > 0
     [set eat-time eat-time - 1
      set ycor ycor - eat-ratio]
-    [set eat false
+    [set eating false
       set eat-time 5]]
   [ifelse ycor > 10
-    [set eat true]
+    [set eating true]
     [set ycor ycor + eat-ratio / 2]]
 end
 
 to sleepys-go
-  ifelse sleep
+  ifelse sleeping
   [ifelse ycor < 0
-    [set sleep false]
+    [set sleeping false]
     [set ycor ycor - sleep-ratio]]
   [ifelse ycor > 10
-    [set sleep true]
+    [set sleeping true]
     [set ycor ycor + sleep-ratio / 2]]
 end
 
 to humans-go
-  ifelse sleep
+  ifelse sleeping
   [ask humans [set heading 90]]
   [ask humans [set heading 0]]
-  ifelse eat
-  [ask humans [set heading 90]]
+  ifelse eating
+  [ask humans [set heading -90]]
   [ask humans [set heading 0]]
 end
-
 @#$#@#$#@
 GRAPHICS-WINDOW
 210
@@ -113,10 +116,10 @@ ticks
 30.0
 
 BUTTON
-18
-38
-92
-71
+28
+14
+102
+47
 Setup
 setup
 NIL
@@ -130,10 +133,10 @@ NIL
 1
 
 BUTTON
-108
-39
-171
-72
+118
+15
+181
+48
 Go
 go
 T
@@ -147,10 +150,10 @@ NIL
 1
 
 SLIDER
-12
-179
-184
-212
+20
+70
+192
+103
 fear-speed
 fear-speed
 0
@@ -162,10 +165,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-14
-226
-186
-259
+22
+117
+194
+150
 eat-ratio
 eat-ratio
 0
@@ -177,10 +180,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-13
-276
-185
-309
+21
+167
+193
+200
 sleep-ratio
 sleep-ratio
 0
@@ -192,10 +195,10 @@ NIL
 HORIZONTAL
 
 SWITCH
-729
-49
-860
-82
+658
+84
+789
+117
 eat
 eat
 1
@@ -203,10 +206,10 @@ eat
 -1000
 
 SWITCH
-806
-124
-920
-157
+659
+123
+792
+156
 sleep
 sleep
 1
@@ -214,10 +217,10 @@ sleep
 -1000
 
 SLIDER
-1016
-97
-1188
-130
+659
+163
+788
+196
 eat-time-const
 eat-time-const
 0
@@ -227,6 +230,36 @@ eat-time-const
 1
 NIL
 HORIZONTAL
+
+TEXTBOX
+660
+18
+810
+75
+Blue = Fear\nRed = Hunger\nGreen = Sleep
+15
+0.0
+1
+
+PLOT
+657
+296
+857
+446
+Needs
+Time
+Need
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"Fear" 1.0 0 -13791810 true "" "plot [ycor] of one-of turtles with [breed = fears]"
+"Hunger" 1.0 0 -2674135 true "" "plot [ycor] of one-of turtles with [breed = hungers]"
+"Sleep" 1.0 0 -14439633 true "" "plot [ycor] of one-of turtles with [breed = sleepys]"
 
 @#$#@#$#@
 ## WHAT IS IT?
