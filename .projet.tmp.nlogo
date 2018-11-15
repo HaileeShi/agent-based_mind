@@ -64,7 +64,8 @@ to hungers-go
      set ycor ycor - eat-ratio]
     [set eating false
       set eat-time eat-time-const]]
-  [ifelse ycor > 7 and sleeping = false
+  [ifelse ycor > 7 and not
+ sleeping
     [set eating true]
     [set ycor ycor + eat-ratio / 2]]
 end
