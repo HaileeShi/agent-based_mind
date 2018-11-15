@@ -74,7 +74,7 @@ to sleepys-go
   [ifelse ycor < 0
     [set sleeping false]
     [set ycor ycor - sleep-ratio]]
-  [ifelse ycor > 10
+  [ifelse ycor > 8 and eating = false
     [set sleeping true]
     [set ycor ycor + sleep-ratio / 2]]
 end
