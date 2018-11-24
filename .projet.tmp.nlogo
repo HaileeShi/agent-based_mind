@@ -34,7 +34,7 @@ to turtles-setup
                     set xcor 0
                     set ycor -10
                     set shape "person"
-                    set size 4
+                    set size
                     set heading 0]
 end
 
