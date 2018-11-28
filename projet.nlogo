@@ -2,6 +2,7 @@ breed [fears fear]
 breed [hungers hunger]
 breed [sleepys sleepy]
 breed [humans human]
+breed [foods food]
 
 hungers-own [eat-time]
 
@@ -34,12 +35,20 @@ to turtles-setup
                     set xcor 0
                     set ycor -10
                     set shape "person"
-                    set size 4
+                    set size 1
                     set heading 0]
+  create-foods 2 [set color red
+                    set xcor random 30 - 15 ;
+                    set ycor random -12 - 2
+                    set shape "plant"
+                    set size 1
+                    set heading 0]
+
 end
 
 to patches-setup
-  ask patches with [pycor = -5] [set pcolor red]
+  ask patches with [pycor = -1] [set pcolor grey] ; top border
+  ask patches with [pycor = -16] [set pcolor grey] ; bottom border
   ask patches with [pxcor = -10 and 0 <= pycor and pycor <= 10] [set pcolor white]
   ask patches with [pxcor = 0 and 0 <= pycor and pycor <= 10] [set pcolor white]
   ask patches with [pxcor = 10 and 0 <= pycor and pycor <= 10] [set pcolor white]
@@ -58,35 +67,54 @@ to fears-go
 end
 
 to hungers-go
-  ifelse eating
-  [ifelse eat-time > 0
-    [set eat-time eat-time - 1
-     set ycor ycor - eat-ratio]
-    [set eating false
-      set eat-time eat-time-const]]
-  [ifelse ycor > 7 and sleeping = false
-    [set eating true]
-    [set ycor ycor + eat-ratio / 2]]
+  ifelse eating ; s'il mange
+  [ifelse eat-time > 0 ;s'il n'a pas fini de manger
+    [set eat-time eat-time - 1 ;consomme l'aliment
+     set ycor ycor - eat-decrease] ;fait descendre la priorité de l'agent faim
+    [set eating false ;s'il a fini de manger actualiser l'etat
+     set eat-time eat-time-const]] ;reset le temps de consommation
+  [ifelse ycor > 7 and sleeping = false ;s'il ne mange pas, que l'agent faim est élevé et ne dort pas
+    [humans-seek-foods] ;se déplace vers de la nourriture et commence a manger
+    [set ycor ycor + eat-decrease / 2]] ;sinon augmente la faim
+
+  if ycor > 10 [set ycor 10] ;security check
 end
 
 to sleepys-go
   ifelse sleeping
   [ifelse ycor < 0
     [set sleeping false]
-    [set ycor ycor - sleep-ratio]]
+    [set ycor ycor - sleep-decrease]]
   [ifelse ycor > 8 and eating = false
     [set sleeping true]
-    [set ycor ycor + sleep-ratio / 2]]
+    [set ycor ycor + sleep-decrease / 2]]
+
+  if ycor > 10 [set ycor 10] ;security check
 end
 
 to humans-go
   ifelse sleeping
-  [ask humans [set heading 90] ;if sleeping rotate human and color it green
-  ask humans [set color green]]
-  [ask humans [set heading 0]  ;if not sleeping make human stand
-    ifelse eating
+  [ask humans [set color green]]
+  [ifelse eating
     [ask humans [set color red]] ;if eating set human color red
     [ask humans [set color white]]] ;if doing nothing set color white
+end
+
+to humans-seek-foods
+  ask humans[
+    face min-one-of turtles with[shape = "plant"] [distance myself] ; regarder la food la plus proche
+    ifelse not any? foods-on patch-ahead 1 ; si elle est trop loin
+    [fd 1
+    set ycor ycor + eat-decrease / 2] ; avancer vers elle
+    [set eating true ;sinon la manger
+      ask foods-on patch-ahead 1[die] ;supprimer food mangée
+      hatch-foods 1[set color red     ; en faire apparaitre une autre
+                    set xcor random 30 - 15 ;
+                    set ycor random -12 - 2
+                    set shape "plant"
+                    set size 1
+                    set heading 0]];sinon la manger
+  ]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -170,8 +198,8 @@ SLIDER
 117
 194
 150
-eat-ratio
-eat-ratio
+eat-decrease
+eat-decrease
 0
 1
 0.5
@@ -185,8 +213,8 @@ SLIDER
 167
 193
 200
-sleep-ratio
-sleep-ratio
+sleep-decrease
+sleep-decrease
 0
 1
 1.0
@@ -195,33 +223,11 @@ sleep-ratio
 NIL
 HORIZONTAL
 
-SWITCH
-658
-84
-789
-117
-eat
-eat
-1
-1
--1000
-
-SWITCH
-659
-123
-792
-156
-sleep
-sleep
-1
-1
--1000
-
 SLIDER
-659
-163
-788
-196
+22
+210
+151
+243
 eat-time-const
 eat-time-const
 0
