@@ -109,7 +109,7 @@ to hungers-go
     [set ycor ycor + eat-increase / 2]] ;sinon augmente la faim
 
   if ycor > 10 [set ycor 10] ;security check
-  if ycor < 0 [set ycor 0]
+
 end
 
 to sleepys-go
@@ -122,7 +122,6 @@ to sleepys-go
     [set ycor ycor + sleep-increase / 2]]
 
   if ycor > 10 [set ycor 10] ;security check
-  if ycor < 0 [set ycor 0]
 end
 
 to humans-go
