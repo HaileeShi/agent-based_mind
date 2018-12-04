@@ -113,13 +113,13 @@ to hungers-go
 end
 
 to sleepys-go
-  ifelse sleeping
-  [ifelse ycor < 0
-    [set sleeping false]
-    [set ycor ycor - sleep-decrease]]
-  [ifelse ycor > 8 and eating = false
-    [set sleeping true]
-    [set ycor ycor + sleep-increase / 2]]
+  ifelse sleeping ;s'il dort
+  [ifelse ycor <= 0 ;s'il a fini de dormir
+    [set sleeping false] ; se reveiller
+    [set ycor ycor - sleep-decrease]] ;sinon baisser fatigue
+  [ifelse ycor > 8 and eating = false ; si ne dort pas et fatigué
+    [set sleeping true] ; commence a dormir
+    [set ycor ycor + sleep-increase / 2]] ;sinon augmenter la fatigue
 
   if ycor > 10 [set ycor 10] ;security check
   if ycor < 0 [set ycor 0]
@@ -153,7 +153,13 @@ to humans-seek-foods
 end
 
 to wolves-go
-  wiggle
+  ;ifelse any? humans in-radius 3 [ ;si un humain est proche
+  ;  set color red
+  ;  face min-one-of humans in-radius 4 [distance myself]
+  ;  fd 0.9] ;aller le manger
+  ;[ set color white
+    wiggle
+  ;] ; sinon wiggle
 end
 
 to wiggle
@@ -345,10 +351,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-19
-310
-191
-343
+17
+304
+189
+337
 wolf-fear
 wolf-fear
 0
@@ -358,6 +364,36 @@ wolf-fear
 1
 NIL
 HORIZONTAL
+
+TEXTBOX
+289
+75
+325
+93
+Fear
+11
+19.9
+1
+
+TEXTBOX
+412
+77
+456
+96
+Hunger
+11
+19.9
+1
+
+TEXTBOX
+546
+77
+585
+95
+Sleep
+11
+19.9
+1
 
 @#$#@#$#@
 ## WHAT IS IT?
