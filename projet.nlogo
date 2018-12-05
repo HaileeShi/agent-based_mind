@@ -7,7 +7,7 @@ breed [foods food]
 
 hungers-own [eat-time]
 
-globals[eating sleeping]
+globals[eating sleeping fearing]
 
 to setup
   clear-all
@@ -85,15 +85,30 @@ to go
 end
 
 to fears-go
-  ask humans[
-    ifelse any? wolves in-radius wolf-fear[ ;s'il voit un loup
+  ask humans
+    [ifelse any? wolves in-radius fear-dist[ ;s'il voit un loup
+
+      if any? wolves-here [ ; si le loup est sur mon patch donc me mange
+        set xcor random 30 - 15 ; respawn
+        set ycor random -12 - 2
+        set fear-dist fear-dist + 4 ;augmenter sa méfiance
+        set fearing false
+        ask fears [set ycor 0] ask hungers [set ycor 0] ask sleepys [set ycor 0] ; reinitialiser agents
+      ]
+
+      set fearing true;
       ask fears [set ycor 10] ;fears max
+      set color blue;
       set sleeping false; ;stop all activity
       set eating false
       face min-one-of wolves [distance myself] ;run away
       rt 180
-      fd 1]
-    [ask fears [set ycor 0]]
+      fd 1.2]
+    [if fearing = true ; s'il ne voit pas/plus de loup mais a toujours peur (a réussi a fuir)
+        [if fear-dist > 1 [set fear-dist fear-dist - 1] ;baisser sa méfiance
+         set fearing false ;arreter d avoir peur
+         ask fears [set ycor 0]] ; baisser le niveau de la priorité de l agent peur
+        ]
   ]
 end
 
@@ -131,7 +146,11 @@ to humans-go
   [ifelse eating
     [ask humans [set color red]] ;if eating set human color red
     [ask humans [set color white ;if doing nothing set color white and wiggle
-                 wiggle]]]
+                 wiggle
+                 fd 1]]]
+
+  if ycor < -15 [ set ycor -2] ; thoric world
+  if ycor > -1 [ set ycor -15 ]
 end
 
 to humans-seek-foods
@@ -153,21 +172,28 @@ to humans-seek-foods
 end
 
 to wolves-go
-  ;ifelse any? humans in-radius 3 [ ;si un humain est proche
-  ;  set color red
-  ;  face min-one-of humans in-radius 4 [distance myself]
-  ;  fd 0.9] ;aller le manger
-  ;[ set color white
+  ifelse any? humans in-radius wolf-see-dist [ ;si un humain est proche
+    set color red
+    face min-one-of humans in-radius wolf-see-dist [distance myself]
+    fd 1.5] ;aller le manger
+  [ set color white
     wiggle
-  ;] ; sinon wiggle
+    fd 1
+  ] ; sinon wiggle
 end
 
 to wiggle
   rt random 40
   lt random 40
   if [pcolor] of patch-ahead 1 = grey [ rt 180 ]
-  fd 1
 end
+
+
+
+;TODO
+; gérer monde thorique
+; fear -- si loup voit plus
+; loup suit pendant X ticks
 @#$#@#$#@
 GRAPHICS-WINDOW
 210
@@ -231,21 +257,6 @@ NIL
 1
 
 SLIDER
-17
-264
-189
-297
-fear-speed
-fear-speed
-0
-1
-0.5
-0.1
-1
-NIL
-HORIZONTAL
-
-SLIDER
 16
 184
 188
@@ -291,20 +302,20 @@ NIL
 HORIZONTAL
 
 TEXTBOX
-660
-18
-810
-75
+663
+27
+813
+84
 Blue = Fear\nRed = Hunger\nGreen = Sleep
 15
 0.0
 1
 
 PLOT
-657
-296
-857
-446
+658
+91
+858
+241
 Needs
 Time
 Need
@@ -352,14 +363,14 @@ HORIZONTAL
 
 SLIDER
 17
-304
+268
 189
-337
-wolf-fear
-wolf-fear
-0
+301
+fear-dist
+fear-dist
+1
 10
-5.0
+2.0
 1
 1
 NIL
@@ -394,6 +405,39 @@ Sleep
 11
 19.9
 1
+
+SLIDER
+18
+339
+190
+372
+wolf-see-dist
+wolf-see-dist
+0
+16
+7.0
+1
+1
+NIL
+HORIZONTAL
+
+PLOT
+657
+254
+857
+404
+Fear
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plot fear-dist"
 
 @#$#@#$#@
 ## WHAT IS IT?
