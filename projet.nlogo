@@ -7,7 +7,7 @@ breed [foods food]
 
 hungers-own [eat-time]
 
-globals[eating sleeping fearing wasFearing]
+globals[eating sleeping fearing]
 
 to setup
   clear-all
@@ -111,37 +111,31 @@ to fears-go
          ask fears [set ycor 0]] ; baisser le niveau de la priorité de l agent peur
        ]
   ]
-
-  ]
 end
 
 to hungers-go
-  if fearing = false[
    ifelse eating ; s'il mange
    [ifelse eat-time > 0 ;s'il n'a pas fini de manger
      [set eat-time eat-time - 1 ;consomme l'aliment
       set ycor ycor - eat-decrease] ;fait descendre la priorité de l'agent faim
      [set eating false ;s'il a fini de manger actualiser l'etat
       set eat-time eat-time-const]] ;reset le temps de consommation
-   [ifelse ycor > 7 and sleeping = false ;s'il ne mange pas, que l'agent faim est élevé et ne dort pas
+   [ifelse ycor > 7 and sleeping = false and fearing = false ;s'il ne mange pas, que l'agent faim est élevé et ne dort pas
      [humans-seek-foods] ;se déplace vers de la nourriture et commence a manger
      [set ycor ycor + eat-increase / 2]] ;sinon augmente la faim
-  ]
 
   if ycor > 10 [set ycor 10] ;security check
   if ycor < 0 [set ycor 0]
 end
 
 to sleepys-go
-  if fearing = false[
    ifelse sleeping ;s'il dort
    [ifelse ycor <= 0 ;s'il a fini de dormir
      [set sleeping false] ; se reveiller
      [set ycor ycor - sleep-decrease]] ;sinon baisser fatigue
-   [ifelse ycor > 8 and eating = false ; si ne dort pas et fatigué
+   [ifelse ycor > 8 and eating = false and fearing = false; si ne dort pas et fatigué
      [set sleeping true] ; commence a dormir
      [set ycor ycor + sleep-increase / 2]] ;sinon augmenter la fatigue
-  ]
 
    if ycor > 10 [set ycor 10] ;security check
    if ycor < 0 [set ycor 0]
@@ -182,7 +176,7 @@ to wolves-go
   ifelse any? humans in-radius wolf-see-dist [ ;si un humain est proche
     set color red
     face min-one-of humans in-radius wolf-see-dist [distance myself]
-    fd 2] ;aller le manger
+    fd 1] ;aller le manger
   [ set color white
     wiggle
     fd 1
@@ -377,7 +371,7 @@ fear-dist
 fear-dist
 1
 16
-9.0
+1.0
 1
 1
 NIL
@@ -422,7 +416,7 @@ wolf-see-dist
 wolf-see-dist
 0
 16
-9.0
+14.0
 1
 1
 NIL
