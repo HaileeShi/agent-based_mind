@@ -103,10 +103,11 @@ to fears-go
       set eating false
       face min-one-of wolves [distance myself] ;fuir
       rt 180
+      wiggle
       fd 1]
 
       [if fearing = true ; s'il ne voit pas/plus de loup mais a toujours peur (a réussi a fuir)
-        [if fear-dist > 1 [set fear-dist fear-dist - 1] ;baisser sa méfiance
+        [if not any? wolves with [color = red] and fear-dist > 1 [set fear-dist fear-dist - 1] ;baisser sa méfiance
          set fearing false ;arreter d avoir peur
          ask fears [set ycor 0]] ; baisser le niveau de la priorité de l agent peur
        ]
@@ -151,7 +152,7 @@ to humans-go
                  fd 1]]]
 
   if ycor < -15 [ set ycor -2] ; thoric world
-  if ycor > -1 [ set ycor -15 ]
+  if ycor > -2 [ set ycor -15 ]
 end
 
 to humans-seek-foods
@@ -371,7 +372,7 @@ fear-dist
 fear-dist
 1
 16
-1.0
+9.0
 1
 1
 NIL
@@ -416,7 +417,7 @@ wolf-see-dist
 wolf-see-dist
 0
 16
-14.0
+10.0
 1
 1
 NIL
