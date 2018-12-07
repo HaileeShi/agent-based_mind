@@ -22,7 +22,7 @@ to turtles-setup
   create-fears 1 [
     set color blue
     set xcor -10
-    set ycor 5
+    set ycor 0
     set heading 0
   ]
 
@@ -64,6 +64,10 @@ to turtles-setup
                     set shape "plant"
                     set size 1
                     set heading 0]
+
+  set fearing false
+  set eating false
+  set sleeping false
 
 end
 
@@ -372,7 +376,7 @@ fear-dist
 fear-dist
 1
 16
-11.0
+6.0
 1
 1
 NIL
