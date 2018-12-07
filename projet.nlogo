@@ -314,10 +314,10 @@ Blue = Fear\nRed = Hunger\nGreen = Sleep
 1
 
 PLOT
-658
-91
-858
-241
+656
+93
+872
+264
 Needs
 Time
 Need
@@ -372,7 +372,7 @@ fear-dist
 fear-dist
 1
 16
-9.0
+11.0
 1
 1
 NIL
@@ -417,17 +417,17 @@ wolf-see-dist
 wolf-see-dist
 0
 16
-10.0
+7.0
 1
 1
 NIL
 HORIZONTAL
 
 PLOT
-657
-254
-857
-404
+655
+271
+871
+447
 Fear
 NIL
 NIL
